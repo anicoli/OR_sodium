@@ -1,1 +1,40 @@
 # OR_sodium
+
+This repository contains data, analysis scripts, and molecular dynamics simulation results associated with the publication:
+
+```
+OR_sodium/
+├── data/
+│   ├── BW_numbering/          # Ballesteros-Weinstein numbering and sequence alignments
+│   └── ...
+├── <name>/                    # MD simulation setup and trajectories
+├── <name>/                    # Analysis scripts and results
+└── <name>/                    # Publication figures and visualization scripts
+```
+
+
+## Repository Structure
+
+```
+OR_sodium/
+├── data/
+│   ├── BW_numbering/          # Ballesteros-Weinstein numbering and sequence alignments
+│   └── ...
+├── <name>/                    # MD simulation setup and trajectories
+├── <name>/                    # Analysis scripts and results
+└── <name>/                    # Publication figures and visualization scripts
+```
+
+## Studied Systems
+
+This repository includes data for seven olfactory receptors:
+
+| Receptor | UniProt Code | Class | Description |
+|----------|--------------|-------|-------------|
+| OR51E1 | Q8TCB6 | I | Olfactory receptor 51E1 |
+| OR51E2 | Q9H255 | I | Olfactory receptor 51E2 |
+| OR1A1 | Q9P1Q5 | II | Olfactory receptor 1A1 |
+| OR2W1 | Q9Y3N9 | II | Olfactory receptor 2W1 |
+| OR5K1 | Q8NGC1 | II | Olfactory receptor 5K1 |
+| OR8D1 | Q8WZ84 | II | Olfactory receptor 8D1 |
+| OR11A1 | Q9GZK7 | II | Olfactory receptor 11A1 |
