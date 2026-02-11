@@ -1,15 +1,20 @@
-Readme · MD
 # Ballesteros-Weinstein (BW) Numbering and generic residue numbering 
 
 ## Overview
 
 This folder contains the BW and generic residue numbering assignments for the analyzed structures, along with the structure-based sequence alignments.
 
-## Contents
+## Analyzed Receptors
 
-- **CSV file(s)**: Structure-based sequence alignments with BW numbering annotations
-- Contains residue positions mapped to the BW numbering scheme
-- Derived from structural superimposition onto OR51E2 reference structure
+| Receptor | UniProt Code | Class |
+|----------|--------------|-------|
+| OR51E1 | Q8TCB6 | I |
+| OR51E2 | Q9H255 | I |
+| OR1A1 | Q9P1Q5 | II |
+| OR2W2 | Q9Y3N9 | II |
+| OR5K1 | Q8NGC1 | II |
+| OR8D1 | Q8WZ84 | II |
+| OR11A1 | Q9GZK7 | II |
 
 ## File Format
 
@@ -18,11 +23,6 @@ The CSV file(s) contain:
 - Amino acid sequences
 - BW numbering annotations
 - Generic residue numbers
-
-## References
-
-- GPCRdb (https://gpcrdb.org/) - Source for β2AR/OR51E2 pairwise alignment
-- Ballesteros & Weinstein numbering scheme for GPCRs
 
 ## Notes
 
