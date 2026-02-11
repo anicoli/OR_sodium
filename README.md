@@ -1,17 +1,12 @@
 # OR_sodium
 
-This repository contains data, analysis scripts, and molecular dynamics simulation results associated with the publication:
+This repository contains data, analysis scripts, and additional materials associated with the work:
 
-```
-OR_sodium/
-├── data/
-│   ├── BW_numbering/          # Ballesteros-Weinstein numbering and sequence alignments
-│   └── ...
-├── <name>/                    # MD simulation setup and trajectories
-├── <name>/                    # Analysis scripts and results
-└── <name>/                    # Publication figures and visualization scripts
-```
+**Sodium is an allosteric modulator of odorant receptors**  
+Haag F†, Nicoli A†, Bößl F, Hoffmann S, Bauer J, Hopf R, Krautwurst P, Di Pizio A*, Krautwurst D*.
 
+†Equal contribution  
+*Corresponding authors
 
 ## Repository Structure
 
