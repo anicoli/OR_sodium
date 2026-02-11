@@ -1,4 +1,4 @@
-# Ballesteros-Weinstein (BW) Numbering and generic residue numbering 
+# Ballesteros-Weinstein (BW) and generic residue numbering 
 
 ## Overview
 
