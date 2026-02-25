@@ -25,7 +25,7 @@ OR_sodium/
 
 This repository includes data for seven olfactory receptors:
 
-| Receptor | UniProt Code | Class | Description |
+| Receptor | UniProt Code | Class |  Full name  |
 |----------|--------------|-------|-------------|
 | OR51E1 | Q8TCB6 | I | Olfactory receptor 51E1 |
 | OR51E2 | Q9H255 | I | Olfactory receptor 51E2 |
