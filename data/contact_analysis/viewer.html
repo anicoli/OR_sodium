@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OR Sodium — Receptor Viewer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+    :root {
+      --bg: #0d0f14;
+      --panel: #13161e;
+      --border: #1e2330;
+      --accent: #e05c2a;
+      --accent2: #3a8fd4;
+      --text: #d4d8e2;
+      --muted: #6b7280;
+      --tag: #1a1f2e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+    }
+
+    header h1 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+
+    header span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 56px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 230px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .btn {
+      background: var(--tag);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .btn:hover {
+      border-color: var(--accent2);
+      color: #fff;
+    }
+
+    .btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .state-btn.active {
+      background: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    /* ── Viewer ── */
+    .viewer-wrap {
+      flex: 1;
+      position: relative;
+      background: #080a0f;
+    }
+
+    #viewer {
+      width: 100%;
+      height: 100%;
+    }
+
+    .info-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,15,20,0.85);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 0.75rem;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .info-bar .tag {
+      background: var(--tag);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 3px;
+      color: var(--muted);
+    }
+
+    .info-bar .tag span { color: var(--text); margin-left: 4px; }
+
+    /* colorbar */
+    .colorbar-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .colorbar {
+      width: 90px;
+      height: 10px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #3182bd, #74c476, #fd8d3c, #de2d26);
+    }
+
+    .status {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .status p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .notice {
+      background: rgba(58,143,212,0.1);
+      border: 1px solid rgba(58,143,212,0.25);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 0.75rem;
+      color: #8ab8d8;
+      line-height: 1.5;
+    }
+
+    .notice code {
+      background: rgba(255,255,255,0.07);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>OR_sodium</h1>
+  <span>Sodium is an allosteric modulator of odorant receptors · Haag &amp; Nicoli et al.</span>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+
+    <div>
+      <div class="section-label">State</div>
+      <div class="btn-group" id="state-group">
+        <button class="btn state-btn active" data-state="apo">Apo</button>
+        <button class="btn state-btn" data-state="sodium">+ Sodium</button>
+        <button class="btn state-btn" data-state="agonist">+ Agonist</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Receptor</div>
+      <div class="btn-group" id="receptor-group">
+        <button class="btn rec-btn active" data-rec="OR1">OR1</button>
+        <button class="btn rec-btn" data-rec="OR2">OR2</button>
+        <button class="btn rec-btn" data-rec="OR3">OR3</button>
+        <button class="btn rec-btn" data-rec="OR4">OR4</button>
+        <button class="btn rec-btn" data-rec="OR5">OR5</button>
+        <button class="btn rec-btn" data-rec="OR6">OR6</button>
+        <button class="btn rec-btn" data-rec="OR7">OR7</button>
+      </div>
+    </div>
+
+    <div class="notice">
+      Color = B-factor<br>
+      <strong>Blue → low · Red → high</strong><br><br>
+      Place PDB files in:<br>
+      <code>data/structures/</code><br>
+      named as e.g.<br>
+      <code>OR1_apo.pdb</code>
+    </div>
+
+  </aside>
+
+  <!-- 3D Viewer -->
+  <div class="viewer-wrap">
+    <div id="viewer"></div>
+
+    <div class="status" id="status">
+      <div class="spinner"></div>
+      <p>Loading structure…</p>
+    </div>
+
+    <div class="info-bar">
+      <div class="tag">Receptor <span id="info-rec">OR1</span></div>
+      <div class="tag">State <span id="info-state">Apo</span></div>
+      <div class="tag">Coloring <span>B-factor</span></div>
+      <div class="colorbar-wrap">
+        <span>low</span>
+        <div class="colorbar"></div>
+        <span>high</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Configuration ──────────────────────────────────────────────────
+  // Edit these to match your actual receptor names / file naming scheme
+  const RECEPTORS = ['OR1','OR2','OR3','OR4','OR5','OR6','OR7'];
+  const STATES    = ['apo','sodium','agonist'];
+  const STATE_LABELS = { apo: 'Apo', sodium: '+ Sodium', agonist: '+ Agonist' };
+
+  // Path relative to this HTML file → e.g. structures/OR1_apo.pdb
+  // Adjust if your folder layout differs
+  function pdbPath(rec, state) {
+    return `structures/${rec}_${state}.pdb`;
+  }
+  // ──────────────────────────────────────────────────────────────────
+
+  let currentRec   = RECEPTORS[0];
+  let currentState = STATES[0];
+  let viewer;
+
+  function initViewer() {
+    viewer = $3Dmol.createViewer('viewer', {
+      backgroundColor: '#080a0f',
+      antialias: true,
+    });
+  }
+
+  function loadStructure(rec, state) {
+    const statusEl = document.getElementById('status');
+    statusEl.style.display = 'block';
+    statusEl.innerHTML = '<div class="spinner"></div><p>Loading ' + rec + ' · ' + STATE_LABELS[state] + '…</p>';
+
+    viewer.clear();
+
+    const url = pdbPath(rec, state);
+
+    jQuery.ajax({
+      url: url,
+      success: function(data) {
+        viewer.addModel(data, 'pdb');
+
+        // Cartoon colored by b-factor (spectrum: blue→green→orange→red)
+        viewer.setStyle({}, {
+          cartoon: {
+            colorfunc: function(atom) {
+              return bfactorColor(atom.b);
+            },
+            thickness: 0.4,
+          }
+        });
+
+        viewer.zoomTo();
+        viewer.render();
+
+        document.getElementById('info-rec').textContent   = rec;
+        document.getElementById('info-state').textContent = STATE_LABELS[state];
+        statusEl.style.display = 'none';
+      },
+      error: function() {
+        statusEl.innerHTML =
+          '<p style="color:#e05c2a;font-family:\'IBM Plex Mono\',monospace;font-size:0.8rem;">' +
+          'Could not load<br><strong>' + url + '</strong><br><br>' +
+          '<span style="color:#6b7280">Place your PDB files in<br>data/structures/ named<br>' +
+          rec + '_' + state + '.pdb</span></p>';
+      }
+    });
+  }
+
+  // B-factor → color (blue → cyan → green → yellow → orange → red)
+  function bfactorColor(b) {
+    // Clamp to [0, 100]
+    const t = Math.max(0, Math.min(100, b ?? 50)) / 100;
+    // 5-stop gradient matching the colorbar
+    const stops = [
+      [0,   [49, 130, 189]],   // blue
+      [0.25,[116, 196, 118]],  // green
+      [0.5, [254, 178, 76]],   // yellow-orange
+      [0.75,[253, 141, 60]],   // orange
+      [1,   [222, 45,  38]],   // red
+    ];
+    for (let i = 0; i < stops.length - 1; i++) {
+      const [t0, c0] = stops[i];
+      const [t1, c1] = stops[i+1];
+      if (t >= t0 && t <= t1) {
+        const f = (t - t0) / (t1 - t0);
+        const r = Math.round(c0[0] + f*(c1[0]-c0[0]));
+        const g = Math.round(c0[1] + f*(c1[1]-c0[1]));
+        const bv= Math.round(c0[2] + f*(c1[2]-c0[2]));
+        return `rgb(${r},${g},${bv})`;
+      }
+    }
+    return 'rgb(222,45,38)';
+  }
+
+  // ── Button interactions ─────────────────────────────────────────
+  document.querySelectorAll('.state-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentState = this.dataset.state;
+      loadStructure(currentRec, currentState);
+    });
+  });
+
+  document.querySelectorAll('.rec-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.rec-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentRec = this.dataset.rec;
+      loadStructure(currentRec, currentState);
+    });
+  });
+
+  // ── Init ────────────────────────────────────────────────────────
+  initViewer();
+  loadStructure(currentRec, currentState);
+</script>
+</body>
+</html>
