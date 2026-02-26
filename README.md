@@ -22,9 +22,7 @@ OR_sodium/
 └── <name>/                    # Publication figures and visualization scripts
 ```
 
-📊 **Interactive 3D viewer:** [Contact Analysis](https://anicoli.github.io/OR_sodium/data/contact_analysis/viewer.html)
-
-## Studied Systems
+📊 **Interactive 3D viewer:** [Contact Analysis](https://github.com/anicoli/OR_sodium/blob/main/data/contact_analysis/viewer.html)
 
 This repository includes data for seven olfactory receptors:
 
