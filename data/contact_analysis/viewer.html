@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OR Sodium — Contact Analysis Viewer</title>
+  <script src="https://unpkg.com/ngl@2.0.0-dev.37/dist/ngl.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+    :root {
+      --bg: #0d0f14;
+      --border: #1e2330;
+      --accent: #e05c2a;
+      --accent2: #3a8fd4;
+      --text: #d4d8e2;
+      --muted: #6b7280;
+      --tag: #1a1f2e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    header span {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 50px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      overflow-y: auto;
+    }
+
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 9px;
+    }
+
+    .btn-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .btn {
+      background: var(--tag);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 13px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .btn:hover { border-color: var(--accent2); color: #fff; }
+    .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .state-btn.active { background: var(--accent2); border-color: var(--accent2); }
+
+    .btn .sub {
+      display: block;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 2px;
+    }
+    .btn.active .sub { color: rgba(255,255,255,0.7); }
+
+    .rec-meta {
+      font-size: 0.82rem;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--muted);
+      background: var(--tag);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      line-height: 2;
+    }
+    .rec-meta strong { color: var(--text); }
+    .class-i  { color: #f6ad55; }
+    .class-ii { color: #68d391; }
+
+    /* ── Viewer ── */
+    .viewer-wrap {
+      flex: 1;
+      position: relative;
+      background: #080a0f;
+    }
+
+    #viewport {
+      width: 100%;
+      height: 100%;
+    }
+
+    .info-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(13,15,20,0.88);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.78rem;
+      font-family: 'IBM Plex Mono', monospace;
+      flex-wrap: wrap;
+    }
+
+    .itag {
+      background: var(--tag);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .itag span { color: var(--text); margin-left: 5px; }
+
+    .colorbar-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .colorbar {
+      width: 100px; height: 11px;
+      border-radius: 3px;
+      background: linear-gradient(to right,
+        #3182bd 0%,
+        #74c476 30%,
+        #fd8d3c 55%,
+        #de2d26 65%,
+        #de2d26 100%
+      );
+    }
+
+    /* status overlay */
+    .status {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .status p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 12px;
+      line-height: 1.7;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>OR_sodium · Contact Analysis</h1>
+  <span>Sodium is an allosteric modulator of odorant receptors · Haag &amp; Nicoli et al.</span>
+</header>
+
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <div>
+      <div class="section-label">Protonation State</div>
+      <div class="btn-group" id="state-group">
+        <button class="btn state-btn active" data-state="DEP">
+          -/- active
+          <span class="sub">Both residues deprotonated</span>
+        </button>
+        <button class="btn state-btn" data-state="ONE">
+          H/- active
+          <span class="sub">D2.50 deprotonated only</span>
+        </button>
+        <button class="btn state-btn" data-state="DOUBLE">
+          H/H active
+          <span class="sub">Double protonated</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Receptor</div>
+      <div class="btn-group" id="receptor-group">
+        <button class="btn rec-btn active" data-rec="OR51E1">OR51E1</button>
+        <button class="btn rec-btn" data-rec="OR51E2">OR51E2</button>
+        <button class="btn rec-btn" data-rec="OR1A1">OR1A1</button>
+        <button class="btn rec-btn" data-rec="OR2W1">OR2W1</button>
+        <button class="btn rec-btn" data-rec="OR5K1">OR5K1</button>
+        <button class="btn rec-btn" data-rec="OR8D1">OR8D1</button>
+        <button class="btn rec-btn" data-rec="OR11A1">OR11A1</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Info</div>
+      <div class="rec-meta" id="rec-meta">—</div>
+    </div>
+
+  </aside>
+
+  <div class="viewer-wrap">
+    <div id="viewport"></div>
+
+    <div class="status" id="status">
+      <div class="spinner"></div>
+      <p>Loading structure…</p>
+    </div>
+
+    <div class="info-bar">
+      <div class="itag">Receptor <span id="info-rec">—</span></div>
+      <div class="itag">GPCR state <span>Active</span></div>
+      <div class="itag">Protonation <span id="info-state">—</span></div>
+      <div class="itag">Color <span>Contact frequency (capped 65%)</span></div>
+      <div class="colorbar-wrap">
+        <span>0%</span>
+        <div class="colorbar"></div>
+        <span>≥65%</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Receptor metadata ────────────────────────────────────────────────────
+  const RECEPTOR_INFO = {
+    OR51E1: { class: 'I',  res250: 'D72', res339: 'E113' },
+    OR51E2: { class: 'I',  res250: 'D69', res339: 'E110' },
+    OR1A1:  { class: 'II', res250: 'D70', res339: 'D111' },
+    OR2W1:  { class: 'II', res250: 'D70', res339: 'E111' },
+    OR5K1:  { class: 'II', res250: 'D70', res339: 'D111' },
+    OR8D1:  { class: 'II', res250: 'D70', res339: 'E111' },
+    OR11A1: { class: 'II', res250: 'D72', res339: 'E112' },
+  };
+
+  const STATE_LABELS = {
+    DEP:    '-/- active',
+    ONE:    'H/- active',
+    DOUBLE: 'H/H active',
+  };
+
+  const CAP = 65; // contact frequency cap (%)
+
+  let currentRec   = 'OR51E1';
+  let currentState = 'DEP';
+  let stage, currentComponent;
+
+  // ── NGL colour scheme based on B-factor ──────────────────────────────────
+  function makeBfactorScheme() {
+    const scheme = NGL.ColormakerRegistry.addScheme(function(params) {
+      this.atomColor = function(atom) {
+        const t = Math.max(0, Math.min(CAP, atom.bfactor || 0)) / CAP;
+
+        const stops = [
+          [0,    [49,  130, 189]],
+          [0.30, [116, 196, 118]],
+          [0.55, [253, 141,  60]],
+          [1,    [222,  45,  38]],
+        ];
+
+        let c0, c1, t0, t1;
+        for (let i = 0; i < stops.length - 1; i++) {
+          if (t >= stops[i][0] && t <= stops[i+1][0]) {
+            [t0, c0] = stops[i];
+            [t1, c1] = stops[i+1];
+            break;
+          }
+        }
+        if (!c0) { c0 = c1 = stops[stops.length-1][1]; t0 = t1 = 1; }
+
+        const f  = t1 > t0 ? (t - t0) / (t1 - t0) : 1;
+        const r  = Math.round(c0[0] + f * (c1[0] - c0[0]));
+        const g  = Math.round(c0[1] + f * (c1[1] - c0[1]));
+        const b  = Math.round(c0[2] + f * (c1[2] - c0[2]));
+        // NGL expects a single hex integer
+        return (r << 16) | (g << 8) | b;
+      };
+    });
+    return scheme;
+  }
+
+  // ── Load structure ────────────────────────────────────────────────────────
+  let colorScheme = null;
+
+  function loadStructure(rec, state) {
+    const statusEl = document.getElementById('status');
+    statusEl.style.display = 'block';
+    statusEl.innerHTML =
+      '<div class="spinner"></div><p>' + rec + '<br>' + STATE_LABELS[state] + '</p>';
+
+    if (currentComponent) {
+      stage.removeComponent(currentComponent);
+      currentComponent = null;
+    }
+
+    if (!colorScheme) colorScheme = makeBfactorScheme();
+
+    const url = `./${rec}_${state}_contact_perRes_tempfactors.pdb`;
+
+    stage.loadFile(url, { ext: 'pdb', name: rec + '_' + state })
+      .then(function(comp) {
+        currentComponent = comp;
+
+        comp.addRepresentation('cartoon', {
+          color: colorScheme,
+          smoothSheet: true,
+          aspectRatio: 3.0,
+          scale: 1.0,
+        });
+
+        comp.autoView();
+        statusEl.style.display = 'none';
+
+        document.getElementById('info-rec').textContent   = rec;
+        document.getElementById('info-state').textContent = STATE_LABELS[state];
+        updateMeta(rec);
+      })
+      .catch(function() {
+        statusEl.innerHTML =
+          '<p style="color:#e05c2a;font-family:\'IBM Plex Mono\',monospace;font-size:0.82rem;">' +
+          'File not found:<br><strong>' + rec + '_' + state +
+          '_contact_perRes_tempfactors.pdb</strong></p>';
+      });
+  }
+
+  function updateMeta(rec) {
+    const m = RECEPTOR_INFO[rec];
+    if (!m) return;
+    const cls = m.class === 'I' ? 'class-i' : 'class-ii';
+    document.getElementById('rec-meta').innerHTML =
+      '<strong>' + rec + '</strong><br>' +
+      'GPCR state: <strong>active</strong><br>' +
+      'Class: <strong class="' + cls + '">' + m.class + '</strong><br>' +
+      'BW 2.50: <strong>' + m.res250 + '</strong><br>' +
+      'BW 3.39: <strong>' + m.res339 + '</strong>';
+  }
+
+  // ── Button interactions ───────────────────────────────────────────────────
+  document.querySelectorAll('.state-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentState = this.dataset.state;
+      loadStructure(currentRec, currentState);
+    });
+  });
+
+  document.querySelectorAll('.rec-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.rec-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      currentRec = this.dataset.rec;
+      loadStructure(currentRec, currentState);
+    });
+  });
+
+  // ── Boot ─────────────────────────────────────────────────────────────────
+  stage = new NGL.Stage('viewport', {
+    backgroundColor: '#080a0f',
+    quality: 'medium',       // 'low' | 'medium' | 'high'
+    impostor: true,          // GPU-accelerated spheres/cylinders
+    cameraType: 'perspective',
+  });
+
+  // Resize handler
+  window.addEventListener('resize', function() { stage.handleResize(); });
+
+  updateMeta(currentRec);
+  loadStructure(currentRec, currentState);
+</script>
+</body>
+</html>
