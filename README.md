@@ -16,6 +16,7 @@ OR_sodium/
 ├── data/
 │   ├── BW_numbering/          # Ballesteros-Weinstein numbering and sequence alignments
 │   └── initial_model/         # OR prepared intial models
+│   └── contact_analysis/      # OR prepared intial models
 ├── <name>/                    # MD simulation setup and trajectories
 ├── <name>/                    # Analysis scripts and results
 └── <name>/                    # Publication figures and visualization scripts
