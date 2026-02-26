@@ -17,8 +17,8 @@ OR_sodium/
 │   ├── BW_numbering/          # Ballesteros-Weinstein numbering and sequence alignments
 │   └── initial_model/         # OR prepared intial models
 │   └── contact_analysis/      # PDB files with sodium contact frequencies in the B-factor
-├── <name>/                    # MD simulation setup and trajectories
-├── <name>/                    # Analysis scripts and results
+├── <utilities>/               # Analysis scripts and jupyternotebooks
+├── <name>/                    # 
 └── <name>/                    # Publication figures and visualization scripts
 ```
 
