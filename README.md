@@ -42,4 +42,6 @@ This repository includes data for seven olfactory receptors:
 
 ## Molecular Dynamics (MD) simulations
 
-The MD trajectories and input files are deposited at ADD ZENODO LINK.
+The MD trajectories and input files are deposited at Zenodo:
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18886666.svg)](https://zenodo.org/records/18886666)
