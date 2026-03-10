@@ -14,17 +14,16 @@ Haag F†, Nicoli A†, Bößl F, Hopf R, Hernandez A, Hoffmann S, Richter P, Ba
 ```
 OR_sodium/
 ├── data/
-│   ├── BW_numbering/
-│   ├── initial_model/
-│   └── contact_analysis/
+│   ├── BW_numbering/          # Ballesteros-Weinstein numbering for each OR
+│   ├── initial_model/         # Prepared initial OR models
+│   └── contact_analysis/      # PDB files with sodium contact frequencies in the B-factor
 ├── utilities/
-│   ├── MD_protocol/
-│   │   ├── equilibration.py
-│   │   ├── production.py
-│   │   └── boxsize.csv        # example input
-│   └── notebooks/scripts
-├── <name>/
-└── <name>/
+│   ├── MD_protocol/           # OpenMM equilibration and production scripts
+│   │   ├── README.md          # Protocol documentation and usage instructions
+│   │   ├── equilibration.py   
+│   │   ├── production.py      
+│   │   └── boxsize.csv        # Example periodic box dimensions input (x,y,z in Å)
+│   └── scripts/               # Analysis scripts and Jupyter notebooks
 ```
 
 📊 **Interactive 3D viewer:** [Contact Analysis](https://anicoli.github.io/OR_sodium/data/contact_analysis/viewer.html)
