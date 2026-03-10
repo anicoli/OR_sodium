@@ -5,7 +5,7 @@ This repository contains data, analysis scripts, and additional materials associ
 **Sodium is an allosteric modulator of odorant receptors**  
 Haag F<sup>†</sup>, Nicoli A<sup>†</sup>, Bößl F, Hopf R, Hernandez A, Hoffmann S, Richter P, Bauer J, Krautwurst P, Hummel T, Di Pizio A<sup>\*</sup>, Krautwurst D<sup>\*</sup>.  
 
-<sup>†</sup> Equal contribution &nbsp;&nbsp; 
+<sup>†</sup> Equal contribution &nbsp;&nbsp; <\br>
 <sup>\*</sup> Corresponding authors
 
 
