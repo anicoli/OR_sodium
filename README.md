@@ -1,9 +1,7 @@
 # OR_sodium
-![Sodium allosteric modulation](data/panel_for_github_AI.png)
-# OR_sodium
 
 <p align="center">
-  <img src="data/figure_overview.png" width="400">
+  <img src="data/panel_for_github_AI.png" width="400">
 </p>
 
 This repository contains data, analysis scripts, and additional materials associated with the work:
