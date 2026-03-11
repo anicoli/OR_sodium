@@ -11,7 +11,6 @@ Haag F<sup>†</sup>, Nicoli A<sup>†</sup>, Bößl F, Hopf R, Hernandez A, Hof
 
 <sup>†</sup> Equal contribution <br>
 <sup>*</sup> Corresponding authors
-test
 
 ## Repository Structure
 
