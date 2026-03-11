@@ -1,4 +1,5 @@
 # OR_sodium
+![Sodium allosteric modulation](data/panel_for_github_AI.png)
 
 This repository contains data, analysis scripts, and additional materials associated with the work:
 
