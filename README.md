@@ -1,7 +1,7 @@
 # OR_sodium
 
 <p align="center">
-  <img src="data/panel_for_github_AI.png" width="600" height="350">
+  <img src="data/panel_for_github_AI.png" width="600" height="450">
 </p>
 
 This repository contains data, analysis scripts, and additional materials associated with the work:
