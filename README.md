@@ -26,7 +26,7 @@ OR_sodium/
 │   │   ├── equilibration.py   
 │   │   ├── production.py      
 │   │   └── boxsize.csv        # Example periodic box dimensions input (x,y,z in Å)
-│   └── scripts/               # Analysis scripts and Jupyter notebooks
+│   └── scripts/               # useful scripts
 ```
 
 📊 **Interactive 3D viewer:** [Contact Analysis](https://anicoli.github.io/OR_sodium/data/contact_analysis/viewer.html)
