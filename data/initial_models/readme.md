@@ -15,6 +15,3 @@ This folder contains the inital models of ORs prepared with Schrödinger protein
 | OR5K1 | Q8NGC1 | II |
 | OR8D1 | Q8WZ84 | II |
 | OR11A1 | Q9GZK7 | II |
-
-
-## Notes
