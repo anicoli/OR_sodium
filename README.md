@@ -42,9 +42,3 @@ This repository includes data for seven olfactory receptors:
 | OR5K1 | Q8NGC1 | II | Olfactory receptor 5K1 |
 | OR8D1 | Q8WZ84 | II | Olfactory receptor 8D1 |
 | OR11A1 | Q9GZK7 | II | Olfactory receptor 11A1 |
-
-## Molecular Dynamics (MD) simulations
-
-The MD trajectories and input files are deposited at Zenodo:
-
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18886666.svg)](https://zenodo.org/records/18886666)
